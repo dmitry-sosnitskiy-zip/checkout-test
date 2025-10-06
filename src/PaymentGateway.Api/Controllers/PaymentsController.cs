@@ -1,26 +1,41 @@
-﻿using Microsoft.AspNetCore.Mvc;
-
-using PaymentGateway.Api.Models.Responses;
-using PaymentGateway.Api.Services;
+﻿using MediatR;
+using Microsoft.AspNetCore.Mvc;
+using PaymentGateway.Application.CommandResults;
+using PaymentGateway.Application.Commands.GetPayment;
+using PaymentGateway.Application.Commands.ProcessPayment;
 
 namespace PaymentGateway.Api.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-public class PaymentsController : Controller
+public class PaymentsController(IMediator mediator) : Controller
 {
-    private readonly PaymentsRepository _paymentsRepository;
-
-    public PaymentsController(PaymentsRepository paymentsRepository)
+    [HttpGet("{id:guid}")]
+    public async Task<IActionResult> GetPaymentAsync(Guid id, CancellationToken cancellationToken)
     {
-        _paymentsRepository = paymentsRepository;
+        var result = await mediator.Send(new GetPaymentCommand(id), cancellationToken);
+        
+        return CreateActionResult(result);
     }
 
-    [HttpGet("{id:guid}")]
-    public async Task<ActionResult<PostPaymentResponse?>> GetPaymentAsync(Guid id)
+    [HttpPost]
+    public async Task<IActionResult> MakePaymentAsync([FromBody] ProcessPaymentCommand command, CancellationToken cancellationToken)
     {
-        var payment = _paymentsRepository.Get(id);
+        var result = await mediator.Send(command, cancellationToken);
 
-        return new OkObjectResult(payment);
+        return CreateActionResult(result);
+    }
+
+    private IActionResult CreateActionResult(CommandResult commandResult)
+    {
+        return commandResult.Status switch
+        {
+            CommandResultStatus.Success => Ok(commandResult.Data),
+            CommandResultStatus.DataNotFound => NotFound(commandResult.Data),
+            CommandResultStatus.ValidationFailure => BadRequest(commandResult.Data),
+            CommandResultStatus.PaymentDeclined => StatusCode(402, commandResult.Data),
+            CommandResultStatus.UnexpectedError => StatusCode(500, commandResult.Data),
+            _ => throw new NotSupportedException($"Command result status '{commandResult.Status}' is not supported.")
+        };
     }
 }

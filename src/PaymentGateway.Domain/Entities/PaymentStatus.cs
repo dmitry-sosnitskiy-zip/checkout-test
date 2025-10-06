@@ -1,8 +1,8 @@
-namespace PaymentGateway.Api.Models;
+﻿namespace PaymentGateway.Domain.Entities;
 
 public enum PaymentStatus
 {
+    New,
     Authorized,
     Declined,
-    Rejected
 }
