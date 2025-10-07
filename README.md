@@ -7,9 +7,9 @@ Build a payment gateway, an API based application that will allow a merchant to 
 ## The solution
 
 **Technologies and frameworks used:**
-1) ASP.NET Core — provides the means to handle HTTP requests, easily serialize/deserialize data, and perform dependency injection
-2) MediarR — implementation of the mediator pattern
-2) XUnit, Moq & Shouldly — for unit testing
+1) ASP.NET Core â€” provides the means to handle HTTP requests, easily serialize/deserialize data, and perform dependency injection
+2) MediarR â€” implementation of the mediator pattern
+2) XUnit, Moq & Shouldly â€” for unit testing
 
 **Project structure**
 
@@ -22,7 +22,7 @@ The solution uses a Clean Architecture approach ([description](https://www.dando
 **Running the project:**
 Prequisites: .NET 8 installed, VisualStudio/Rider/other IDE that supports .NET 8
 Steps to run:
-1) Open `CheckoutComTest.sln` in the IDE
+1) Open `PaymentGateway.sln` in the IDE
 2) Set `PaymentGateway.Api` as startup project
 3) Launch the project to spin up the development server at `https://localhost:7092/`
 
